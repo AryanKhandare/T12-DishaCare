@@ -1,8 +1,3 @@
-Yes — use **DishaCare** consistently throughout the README.
-
-Below is a cleaner, proper GitHub-ready `README.md` rather than the previous overly verbose version. It reflects your actual project stack: **Next.js + Express.js + PostgreSQL**, the emergency workflow, matching, WebSockets, reservation, fallback, authentication, and team architecture.
-
-```markdown
 # 🚑 DishaCare
 
 ## The right direction to emergency care.
