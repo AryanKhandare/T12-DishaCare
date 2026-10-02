@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Fredoka", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-navy: var(--navy);
+  --color-navy-foreground: var(--navy-foreground);
+  --color-navy-muted: var(--navy-muted);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* Red, Green, Grey and White Hospital Clean Palette */
+  --background: #F8FAFC; /* Dashboard background: soft clean light grey (#F8FAFC) */
+  --foreground: #1E293B; /* Primary text: deep professional slate (#1E293B) */
+
+  --card: #FFFFFF; /* Pure White (#FFFFFF): main background, cards, forms, modals */
+  --card-foreground: #1E293B;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #1E293B;
+
+  --primary: #16A34A; /* Medical Green (#16A34A): available beds, confirmed reservations, successful actions */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #F1F5F9; /* Professional Light Grey: supporting panels, inactive controls */
+  --secondary-foreground: #1E293B;
+
+  --muted: #F8FAFC; /* Supporting light grey backgrounds */
+  --muted-foreground: #64748B; /* Professional Grey (#64748B): secondary text, borders, supporting info */
+
+  --accent: #F1F5F9; /* Soft grey hover state */
+  --accent-foreground: #16A34A; /* Green accent text */
+
+  --destructive: #DC2626; /* Emergency Red (#DC2626): occupied beds, critical alerts, urgent requests */
+  --destructive-foreground: #FFFFFF;
+
+  --alert-critical: #991B1B; /* Critical emergency alerts (#991B1B): deep emergency red */
+
+  --success: #16A34A; /* Medical Green (#16A34A): available beds, confirmed reservations */
+  --success-foreground: #FFFFFF;
+
+  --warning: #D97706; /* Pending requests (#D97706): clear amber */
+  --warning-foreground: #FFFFFF;
+
+  --navy: #1E293B; /* Deep Slate (#1E293B) */
+  --navy-foreground: #FFFFFF;
+  --navy-muted: #64748B;
+
+  --border: #E2E8F0; /* Borders (#E2E8F0): clean light grey */
+  --input: #E2E8F0; /* Input borders (#E2E8F0) */
+  --ring: #16A34A; /* Medical Green focus ring */
+
+  --chart-1: #16A34A; /* Medical Green (Available) */
+  --chart-2: #DC2626; /* Emergency Red (Occupied) */
+  --chart-3: #D97706; /* Amber (Pending) */
+  --chart-4: #64748B; /* Professional Grey (Inactive/Secondary) */
+  --chart-5: #991B1B; /* Deep Red (Critical Alerts) */
+
+  --sidebar: #FFFFFF; /* Pure White sidebar */
+  --sidebar-foreground: #1E293B;
+  --sidebar-primary: #16A34A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F5F9; /* Clean light grey active nav */
+  --sidebar-accent-foreground: #16A34A; /* Medical Green active text */
+  --sidebar-border: #E2E8F0; /* Borders: #E2E8F0 */
+  --sidebar-ring: #16A34A;
+
+  --shadow-card: 0 1px 3px rgba(30, 41, 59, 0.04), 0 1px 2px rgba(30, 41, 59, 0.02);
+  --shadow-lift: 0 10px 25px -5px rgba(30, 41, 59, 0.08), 0 8px 10px -6px rgba(30, 41, 59, 0.04);
+  --gradient-brand: linear-gradient(135deg, #1E293B 0%, #16A34A 100%);
+}
+
+.dark {
+  --background: #0B111E;
+  --foreground: #F8FAFC;
+  --card: #151F32;
+  --card-foreground: #F8FAFC;
+  --popover: #151F32;
+  --popover-foreground: #F8FAFC;
+  --primary: #16A34A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1E293B;
+  --secondary-foreground: #F8FAFC;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --accent: #1E293B;
+  --accent-foreground: #4ADE80;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --alert-critical: #EF4444;
+  --success: #16A34A;
+  --success-foreground: #FFFFFF;
+  --warning: #D97706;
+  --warning-foreground: #FFFFFF;
+  --navy: #1E293B;
+  --navy-foreground: #F8FAFC;
+  --navy-muted: #64748B;
+  --border: #1E293B;
+  --input: #1E293B;
+  --sidebar: #0B111E;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #16A34A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #4ADE80;
+  --sidebar-border: #1E293B;
+  --sidebar-ring: #16A34A;
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  
+  html {
+    font-family: var(--font-sans);
+    font-size: 15.5px;
+    letter-spacing: -0.01em;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings throughout the entire application: Fredoka */
+  h1, h2, h3, h4, h5, h6,
+  .font-heading,
+  .font-fredoka,
+  [data-heading] {
+    font-family: "Fredoka", var(--font-sans), sans-serif !important;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 3.8vw, 2.85rem);
+    line-height: 1.18;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: clamp(1.45rem, 2.6vw, 2.05rem);
+    line-height: 1.25;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    line-height: 1.3;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-size: 1.15rem;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+
+  /* Enhanced readability for small UI labels, tags, badges, and captions */
+  .text-xs {
+    font-size: 0.8125rem; /* ~13px */
+    line-height: 1.25rem;
+  }
+
+  .text-sm {
+    font-size: 0.9375rem; /* ~15px */
+    line-height: 1.45rem;
+  }
+
+  input, select, textarea, button {
+    font-family: var(--font-sans);
+  }
+}
+
+@utility font-heading { font-family: "Fredoka", var(--font-sans), sans-serif; }
+@utility font-fredoka { font-family: "Fredoka", var(--font-sans), sans-serif; }
+@utility font-body { font-family: var(--font-sans); }
+@utility tnum { font-variant-numeric: tabular-nums; }
+@utility shadow-card { box-shadow: var(--shadow-card); }
+@utility shadow-lift { box-shadow: var(--shadow-lift); }
+@utility bg-brand-gradient { background-image: var(--gradient-brand); }
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.amb-pin { position: relative; width: 22px; height: 22px; }
+.amb-pin .dot { position: absolute; inset: 3px; border-radius: 9999px; background: var(--primary); border: 3px solid white; box-shadow: 0 2px 6px oklch(0 0 0 / .3); }
+.amb-pin .ring { position: absolute; inset: 0; border-radius: 9999px; background: var(--primary); animation: pulse-ring 1.8s ease-out infinite; }
+.hosp-pin { width: 28px; height: 28px; border-radius: 9999px 9999px 9999px 2px; transform: rotate(-45deg); display: grid; place-items: center; border: 2px solid white; box-shadow: 0 2px 6px oklch(0 0 0 / .3); }
+.hosp-pin span { transform: rotate(45deg); color: white; font: 700 12px Inter, sans-serif; }
+.hosp-pin.hl { outline: 3px solid var(--primary); outline-offset: 2px; }
+.leaflet-container { font-family: var(--font-sans); background: var(--muted); }
+.leaflet-div-icon { background: transparent; border: none; }
+/* Positron-like muted basemap */
+.bl-tiles { filter: grayscale(0.85) brightness(1.06) contrast(0.88); }
+.bl-tiles-dark { filter: grayscale(1) invert(1) brightness(0.85) contrast(0.9) hue-rotate(180deg); }
+
+/* DishaCare Real-Time Live Navigation Styles */
+.bedlink-map-root {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+}
+
+@keyframes live-route-flow {
+  from {
+    stroke-dashoffset: 32;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.live-route-flowing {
+  stroke-dasharray: 8 10;
+  animation: live-route-flow 1.2s linear infinite;
+}
