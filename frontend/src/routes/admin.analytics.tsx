@@ -1,15 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useSim } from "@/lib/sim-store";
 import { RESOURCE_KEYS } from "@/lib/types";
 import { RESOURCE_META } from "@/components/bedlink/primitives";
 
 export const Route = createFileRoute("/admin/analytics")({
+  beforeLoad: () => {
+    throw redirect({ to: "/admin" });
+  },
   head: () => ({
     meta: [
-      { title: "Analytics — BedLink" },
+      { title: "Analytics — DishaCare" },
       { name: "description", content: "Network capacity and reservation outcome analytics (simulated)." },
-      { property: "og:title", content: "Analytics — BedLink" },
+      { property: "og:title", content: "Analytics — DishaCare" },
       { property: "og:description", content: "Network capacity and reservation outcomes." },
     ],
   }),

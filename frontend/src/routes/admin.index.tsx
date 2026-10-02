@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { AlertTriangle, ArrowUpDown, BedDouble, Clock, Hourglass, Siren, CheckCircle2, RefreshCw, Timer, Send } from "lucide-react";
+import { ArrowUpDown, BedDouble, Clock, Hourglass, Siren, CheckCircle2, RefreshCw, Timer, Send } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LazyMap, MapLegend } from "@/components/bedlink/LazyMap";
 import { EventTimelineItem, FreshnessBadge, KpiCard, LoadBar, ResourcePill, StatusPill, hospitalAvailability } from "@/components/bedlink/primitives";
@@ -15,9 +15,9 @@ import { RESOURCE_KEYS, TOGGLE_RESOURCES } from "@/lib/types";
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "Command Center dashboard — BedLink" },
+      { title: "Command Center dashboard — DishaCare" },
       { name: "description", content: "Live network KPIs, capacity, stale listings and the event feed across all hospitals." },
-      { property: "og:title", content: "Command Center dashboard — BedLink" },
+      { property: "og:title", content: "Command Center dashboard — DishaCare" },
       { property: "og:description", content: "Live network KPIs, capacity and event feed." },
     ],
   }),
@@ -35,7 +35,6 @@ function Dashboard() {
   const m = computeMetrics();
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
-  const stale = hospitals.filter((h) => h.active && freshnessLevel((now - h.updated_at) / 1000) === "stale");
   const rows = useMemo(
     () => [...hospitals].filter((h) => h.active).sort((a, b) => (sortDir === "desc" ? a.updated_at - b.updated_at : b.updated_at - a.updated_at)),
     [hospitals, sortDir],
@@ -47,20 +46,6 @@ function Dashboard() {
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-sm text-muted-foreground">Mumbai network · simulated live data</p>
       </div>
-
-      {stale.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm">
-          <AlertTriangle className="size-4 text-destructive" />
-          <span className="font-semibold text-destructive">{stale.length} stale listings</span>
-          <span className="text-muted-foreground">No update in 5+ minutes:</span>
-          <span className="flex flex-wrap gap-1.5">
-            {stale.map((h) => (
-              <span key={h.id} className="rounded-md bg-card px-2 py-0.5 text-xs font-medium">{h.name}</span>
-            ))}
-          </span>
-          <Link to="/admin/hospitals" className="ml-auto text-sm font-semibold text-primary hover:underline">Review</Link>
-        </div>
-      )}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label="Active Emergencies" value={m.active_emergencies} icon={Siren} tone="primary" spark={spark([1, 2, 1, 3, 2, 2, 1], m.active_emergencies)} />

@@ -6,17 +6,15 @@ interface ThemeState {
   toggle: () => void;
 }
 
-export const useTheme = create<ThemeState>((set, get) => ({
+export const useTheme = create<ThemeState>((set) => ({
   dark: false,
   init: () => {
-    const dark = localStorage.getItem("bedlink-theme") === "dark";
-    document.documentElement.classList.toggle("dark", dark);
-    set({ dark });
+    localStorage.removeItem("bedlink-theme");
+    document.documentElement.classList.remove("dark");
+    set({ dark: false });
   },
   toggle: () => {
-    const dark = !get().dark;
-    localStorage.setItem("bedlink-theme", dark ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", dark);
-    set({ dark });
+    document.documentElement.classList.remove("dark");
+    set({ dark: false });
   },
 }));

@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle, Ambulance, BellRing, Check, CheckCircle2, Clock, CloudOff, Copy, Loader2, MapPin, Phone,
-  RotateCcw, Ban, Undo2, Users, X, XCircle, ShieldCheck,
+  RotateCcw, Ban, Undo2, Users, X, XCircle, ShieldCheck, Minus, Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { BrandMark, DemoTools, ThemeToggle, UserMenu } from "@/components/bedlink/AppHeader";
 import { CountdownRing, DemoBadge, FreshnessBadge, RESOURCE_META, StepperControl } from "@/components/bedlink/primitives";
+import { WardOverview } from "@/components/bedlink/WardOverview";
 import { requireRole } from "@/lib/guards";
 import { useSim } from "@/lib/sim-store";
 import { useAuth } from "@/lib/auth-store";
@@ -39,9 +40,9 @@ export const Route = createFileRoute("/hospital")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Hospital availability — BedLink" },
+      { title: "Hospital availability — DishaCare" },
       { name: "description", content: "Nurse console: update bed availability, accept or decline incoming ambulance requests, and track active holds." },
-      { property: "og:title", content: "Hospital availability — BedLink" },
+      { property: "og:title", content: "Hospital availability — DishaCare" },
       { property: "og:description", content: "Update availability in seconds and respond to incoming requests." },
     ],
   }),
@@ -99,21 +100,29 @@ function HospitalPage() {
           });
 
           useSim.setState((s) => {
-            const mergedResvs = [...s.reservations];
+            const resvMap = new Map<string, Reservation>();
+            s.reservations.forEach((r) => {
+              if (r && r.id) resvMap.set(r.id, r);
+            });
             allResvs.forEach((r: any) => {
-              const idx = mergedResvs.findIndex((x) => x.id === r.id);
-              if (idx >= 0) {
-                mergedResvs[idx] = { ...mergedResvs[idx], ...r };
-              } else {
-                mergedResvs.unshift(r);
+              if (r && r.id) {
+                const existing = resvMap.get(r.id);
+                resvMap.set(r.id, existing ? { ...existing, ...r } : r);
               }
             });
-            const mergedRequests = [...s.requests];
+            const mergedResvs = Array.from(resvMap.values());
+
+            const reqMap = new Map<string, EmergencyRequest>();
+            s.requests.forEach((q) => {
+              if (q && q.id) reqMap.set(q.id, q);
+            });
             newEmergencies.forEach((e) => {
-              if (!mergedRequests.some((x) => x.id === e.id)) {
-                mergedRequests.unshift(e);
+              if (e && e.id && !reqMap.has(e.id)) {
+                reqMap.set(e.id, e);
               }
             });
+            const mergedRequests = Array.from(reqMap.values());
+
             return { reservations: mergedResvs, requests: mergedRequests };
           });
         }
@@ -143,13 +152,25 @@ function HospitalPage() {
     };
   }, [hospitalId]);
 
-  const pending = reservations
+  const uniqueReservations = useMemo(() => {
+    const map = new Map<string, Reservation>();
+    for (const r of reservations) {
+      if (r && r.id) {
+        if (!map.has(r.id) || (r.resolved_at && !map.get(r.id)?.resolved_at)) {
+          map.set(r.id, r);
+        }
+      }
+    }
+    return Array.from(map.values());
+  }, [reservations]);
+
+  const pending = uniqueReservations
     .filter((r) => r.hospital_id === hospitalId && r.status === "RESERVATION_REQUESTED" && now >= r.starts_at)
     .sort((a, b) => a.starts_at - b.starts_at);
-  const holds = reservations
+  const holds = uniqueReservations
     .filter((r) => r.hospital_id === hospitalId && r.status === "HELD" && !r.arrived_at)
     .sort((a, b) => (b.resolved_at ?? 0) - (a.resolved_at ?? 0));
-  const recent = reservations
+  const recent = uniqueReservations
     .filter((r) => r.hospital_id === hospitalId && ["HELD", "REJECTED", "TIMEOUT", "RELEASED"].includes(r.status) && (r.status !== "HELD" || r.arrived_at))
     .sort((a, b) => (b.resolved_at ?? b.created_at) - (a.resolved_at ?? a.created_at))
     .slice(0, 8);
@@ -228,139 +249,341 @@ function HospitalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/50">
-      <div className="mx-auto flex min-h-screen max-w-[480px] flex-col bg-background shadow-lift">
-        <header className="sticky top-0 z-20 border-b bg-card/95 backdrop-blur">
-          <div className="flex h-14 items-center gap-1 px-3">
-            <BrandMark className="flex-1" />
-            {pending.length > 0 && (
-              <button
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="relative mr-1 grid size-10 place-items-center rounded-lg text-destructive"
-                aria-label={`${pending.length} pending requests`}
-              >
-                <BellRing className="size-5" />
-                <span className="absolute right-0.5 top-0.5 grid min-w-5 place-items-center rounded-full bg-destructive px-1 text-[11px] font-bold text-destructive-foreground tnum">
-                  {pending.length}
-                </span>
-              </button>
-            )}
-            <ThemeToggle />
-            <DemoTools />
-            <UserMenu compact />
+    <div className="min-h-screen bg-muted/30 text-foreground">
+      {/* Sticky Header with responsive container and separate lines for Hospital Name & Status Chips */}
+      <header className="sticky top-0 z-20 w-full border-b bg-card/95 backdrop-blur shadow-xs">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Top Line: Brand Logo on Left, Role Chip & Alert on Right */}
+          <div className="flex h-14 items-center justify-between gap-3">
+            <Link to="/" className="shrink-0 flex items-center">
+              <BrandMark />
+            </Link>
+
+            <div className="flex items-center gap-2">
+              {pending.length > 0 && (
+                <button
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  className="relative grid size-10 place-items-center rounded-lg text-destructive hover:bg-destructive/10 transition"
+                  aria-label={`${pending.length} pending emergency requests`}
+                >
+                  <BellRing className="size-5 animate-pulse" />
+                  <span className="absolute right-0.5 top-0.5 grid min-w-5 place-items-center rounded-full bg-destructive px-1 text-[11px] font-bold text-destructive-foreground tnum">
+                    {pending.length}
+                  </span>
+                </button>
+              )}
+              <UserMenu compact />
+            </div>
           </div>
-          <div className="px-4 pb-3">
+
+          {/* Bottom Line: Hospital Name on its own line + Status Chips Row below */}
+          <div className="pb-3 pt-1 border-t border-border/40">
             {user?.role === "admin" ? (
-              <select value={adminPick} onChange={(e) => setAdminPick(e.target.value)} className="h-11 w-full rounded-lg border bg-card px-2 text-lg font-bold">
-                {hospitals.filter((x) => x.active).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+              <select
+                value={adminPick}
+                onChange={(e) => setAdminPick(e.target.value)}
+                className="h-10 w-full max-w-md rounded-lg border bg-card px-2.5 text-base font-bold text-foreground"
+              >
+                {hospitals
+                  .filter((x) => x.active)
+                  .map((x) => (
+                    <option key={x.id} value={x.id}>
+                      {x.name}
+                    </option>
+                  ))}
               </select>
             ) : (
-              <h1 className="text-xl font-bold">{h.name}</h1>
+              <h1
+                className="text-lg sm:text-2xl font-bold tracking-tight text-foreground line-clamp-2"
+                title={h.name}
+              >
+                {h.name}
+              </h1>
             )}
-            <div className="mt-1 flex items-center justify-between gap-2">
-              <span className="text-sm text-muted-foreground tnum">Updated {timeAgo(h.updated_at, now)}</span>
+
+            {/* Status Chips Row */}
+            <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
               <DemoBadge />
-              <span className={cn("flex items-center gap-1.5 text-xs font-medium", saving ? "text-primary" : "text-success")}>
-                {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-                {saving ? "Saving…" : savedAt ? `Saved ${now - savedAt < 5000 ? "just now" : timeAgo(savedAt, now)}` : "Auto-save on"}
+              <span className="text-muted-foreground tnum flex items-center gap-1">
+                <Clock className="size-3.5" /> Updated {timeAgo(h.updated_at, now)}
+              </span>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 font-medium rounded-full px-2 py-0.5 border text-xs",
+                  saving
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "border-success/30 bg-success/10 text-success",
+                )}
+              >
+                {saving ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Check className="size-3.5" />
+                )}
+                {saving
+                  ? "Saving…"
+                  : savedAt
+                    ? `Saved ${now - savedAt < 5000 ? "just now" : timeAgo(savedAt, now)}`
+                    : "Auto-save on"}
               </span>
             </div>
           </div>
-          <AnimatePresence>
-            {!online && (
-              <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden bg-warning text-warning-foreground">
-                <div className="flex items-center gap-2 px-4 py-2 text-sm font-semibold">
-                  <CloudOff className="size-4" /> Offline — updates queued
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </header>
+        </div>
 
-        <main className="flex-1 space-y-5 p-4">
-          {/* Incoming requests queue (oldest first) */}
-          <AnimatePresence initial={false}>
-            {pending.map((r, i) => {
-              const req = reqOf(r);
-              return req ? <IncomingCard key={r.id} res={r} req={req} hospital={h} queuePos={i} queueLen={pending.length} /> : null;
-            })}
-          </AnimatePresence>
+        <AnimatePresence>
+          {!online && (
+            <motion.div
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{ height: 0 }}
+              className="overflow-hidden bg-warning text-warning-foreground"
+            >
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-1.5 text-xs font-semibold flex items-center gap-2">
+                <CloudOff className="size-4" /> Offline — updates queued
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
-          {holds.length > 0 && (
-            <section className="space-y-3">
-              <SectionTitle icon={ShieldCheck} tone="text-success">Active holds · {holds.length}</SectionTitle>
+      {/* Main Content Area: Responsive container max-w-7xl */}
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        {/* Incoming requests queue (oldest first) */}
+        <AnimatePresence initial={false}>
+          {pending.map((r, i) => {
+            const req = reqOf(r);
+            return req ? (
+              <IncomingCard
+                key={r.id}
+                res={r}
+                req={req}
+                hospital={h}
+                queuePos={i}
+                queueLen={pending.length}
+              />
+            ) : null;
+          })}
+        </AnimatePresence>
+
+        {/* Active holds */}
+        {holds.length > 0 && (
+          <section className="space-y-3">
+            <SectionTitle icon={ShieldCheck} tone="text-success">
+              Active holds · {holds.length}
+            </SectionTitle>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <AnimatePresence initial={false}>
                 {holds.map((r) => {
                   const req = reqOf(r);
-                  return req ? <HoldCard key={r.id} res={r} req={req} hospital={h} /> : null;
+                  return req ? (
+                    <HoldCard key={r.id} res={r} req={req} hospital={h} />
+                  ) : null;
                 })}
               </AnimatePresence>
-            </section>
-          )}
+            </div>
+          </section>
+        )}
 
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
+        {/* Availability controls */}
+        <section className="space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2.5">
               <SectionTitle>Availability</SectionTitle>
               <FreshnessBadge updatedAt={h.updated_at} />
             </div>
+
+            {/* Right-aligned toolbar for tablet and desktop (>= 768px) */}
+            <div className="hidden sm:flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive text-xs font-semibold gap-1.5"
+                onClick={() => {
+                  save(Object.fromEntries(RESOURCE_KEYS.map((k) => [k, 0])));
+                  toast("All resources marked full");
+                }}
+              >
+                <Ban className="size-3.5" /> All full
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 text-xs font-semibold gap-1.5"
+                onClick={() => {
+                  const seed = createSeedHospitals(0).find((x) => x.id === h.id);
+                  if (seed)
+                    save(
+                      Object.fromEntries(
+                        RESOURCE_KEYS.map((k) => [k, seed.resources[k].available]),
+                      ),
+                    );
+                  toast("Reset to baseline");
+                }}
+              >
+                <RotateCcw className="size-3.5" /> Reset
+              </Button>
+            </div>
+          </div>
+
+          {/* 5 Equal-width Cards in a row on Desktop (>= 1024px), 2-3 column on tablet, single-col on mobile */}
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {RESOURCE_KEYS.map((k) => {
               const M = RESOURCE_META[k];
               const r = h.resources[k];
               const toggle = TOGGLE_RESOURCES.includes(k);
+              const isAvailable = r.available > 0;
+
               return (
-                <div key={k} className="flex items-center gap-3 rounded-2xl border bg-card p-4">
-                  <div className={cn("grid size-11 place-items-center rounded-xl", r.available > 0 ? "bg-success/10 text-success" : "bg-muted text-muted-foreground")}>
-                    <M.icon className="size-5" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold">{M.label}</div>
-                    <div className={cn("text-xs font-medium", r.available > 0 ? "text-success" : "text-destructive")}>
-                      {toggle ? (r.available > 0 ? "Accepting" : "Unavailable") : r.available > 0 ? `${r.available} available` : "Full"}
+                <div
+                  key={k}
+                  className="flex flex-col justify-between rounded-2xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-sm"
+                >
+                  {/* Top: Icon + Name */}
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={cn(
+                        "grid size-10 shrink-0 place-items-center rounded-xl",
+                        isAvailable
+                          ? "bg-success/15 text-success"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      <M.icon className="size-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-sm leading-tight text-foreground truncate">
+                        {M.label}
+                      </div>
+                      <div
+                        className={cn(
+                          "text-[11px] font-semibold",
+                          isAvailable ? "text-success" : "text-destructive",
+                        )}
+                      >
+                        {toggle
+                          ? isAvailable
+                            ? "Accepting"
+                            : "Unavailable"
+                          : isAvailable
+                            ? `${r.available} available`
+                            : "Full"}
+                      </div>
                     </div>
                   </div>
-                  {toggle ? (
-                    <Switch className="scale-125" checked={r.available > 0} onCheckedChange={(c) => save({ [k]: c ? 1 : 0 })} aria-label={M.label} />
-                  ) : (
-                    <StepperControl value={r.available} max={r.total} onChange={(v) => save({ [k]: v })} />
-                  )}
+
+                  {/* Middle: Big Number + of N */}
+                  <div className="my-3 flex items-baseline gap-1.5">
+                    <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground tnum font-heading">
+                      {toggle ? (isAvailable ? "1" : "0") : r.available}
+                    </span>
+                    <span className="text-xs font-medium text-muted-foreground tnum">
+                      of {r.total}
+                    </span>
+                  </div>
+
+                  {/* Bottom: 48px tap targets with steppers or switch */}
+                  <div className="mt-auto pt-2 border-t border-border/50">
+                    {toggle ? (
+                      <div className="flex items-center justify-between min-h-[48px]">
+                        <span className="text-xs text-muted-foreground font-medium">
+                          {isAvailable ? "Accepting Patients" : "Capacity Full"}
+                        </span>
+                        <Switch
+                          className="scale-110"
+                          checked={isAvailable}
+                          onCheckedChange={(c) => save({ [k]: c ? 1 : 0 })}
+                          aria-label={M.label}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between min-h-[48px]">
+                        <button
+                          type="button"
+                          aria-label={`Decrease ${M.label}`}
+                          disabled={r.available <= 0}
+                          onClick={() => save({ [k]: Math.max(0, r.available - 1) })}
+                          className="grid size-11 place-items-center rounded-xl border bg-card text-foreground transition active:scale-95 disabled:opacity-35 hover:bg-muted"
+                        >
+                          <Minus className="size-5" />
+                        </button>
+                        <div className="text-center font-mono text-sm font-bold text-foreground tnum">
+                          {r.available} / {r.total}
+                        </div>
+                        <button
+                          type="button"
+                          aria-label={`Increase ${M.label}`}
+                          disabled={r.available >= r.total}
+                          onClick={() => save({ [k]: Math.min(r.total, r.available + 1) })}
+                          className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground transition active:scale-95 disabled:opacity-35 hover:bg-primary/90"
+                        >
+                          <Plus className="size-5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                className="h-12 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => { save(Object.fromEntries(RESOURCE_KEYS.map((k) => [k, 0]))); toast("All resources marked full"); }}
-              >
-                <Ban className="size-4" /> All full
-              </Button>
-              <Button
-                variant="outline"
-                className="h-12"
-                onClick={() => {
-                  const seed = createSeedHospitals(0).find((x) => x.id === h.id);
-                  if (seed) save(Object.fromEntries(RESOURCE_KEYS.map((k) => [k, seed.resources[k].available])));
-                  toast("Reset to baseline");
-                }}
-              >
-                <RotateCcw className="size-4" /> Reset
-              </Button>
-            </div>
-          </section>
+          </div>
 
-          <section className="space-y-2 pb-4">
-            <SectionTitle>Recent decisions</SectionTitle>
-            {recent.length === 0 ? (
-              <p className="rounded-2xl border border-dashed p-4 text-center text-sm text-muted-foreground">No decisions yet.</p>
-            ) : (
-              recent.map((r) => <DecisionRow key={r.id} res={r} req={reqOf(r)} now={now} />)
-            )}
-          </section>
-        </main>
-      </div>
+          {/* Mobile Toolbar below cards (< 768px) */}
+          <div className="grid grid-cols-2 gap-2 sm:hidden pt-1">
+            <Button
+              variant="outline"
+              className="h-12 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive font-semibold"
+              onClick={() => {
+                save(Object.fromEntries(RESOURCE_KEYS.map((k) => [k, 0])));
+                toast("All resources marked full");
+              }}
+            >
+              <Ban className="size-4" /> All full
+            </Button>
+            <Button
+              variant="outline"
+              className="h-12 font-semibold"
+              onClick={() => {
+                const seed = createSeedHospitals(0).find((x) => x.id === h.id);
+                if (seed)
+                  save(
+                    Object.fromEntries(
+                      RESOURCE_KEYS.map((k) => [k, seed.resources[k].available]),
+                    ),
+                  );
+                toast("Reset to baseline");
+              }}
+            >
+              <RotateCcw className="size-4" /> Reset
+            </Button>
+          </div>
+        </section>
+
+        {/* Wards Section (Below availability controls, above recent decisions) */}
+        <WardOverview
+          hospital={h}
+          holds={holds}
+          onUpdateAvailability={(k: ResourceKey, v: number) => save({ [k]: v })}
+        />
+
+        {/* Recent decisions */}
+        <section className="space-y-3 pb-6">
+          <SectionTitle>Recent decisions</SectionTitle>
+          {recent.length === 0 ? (
+            <p className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+              No decisions yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              {recent.map((r) => (
+                <DecisionRow key={r.id} res={r} req={reqOf(r)} now={now} />
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 }
+
 
 function SectionTitle({ children, icon: Icon, tone }: { children: React.ReactNode; icon?: typeof Check; tone?: string }) {
   return (
@@ -592,7 +815,17 @@ function HoldCard({ res, req, hospital }: { res: Reservation; req: EmergencyRequ
           <Button
             className="h-12 bg-success text-success-foreground hover:bg-success/90"
             disabled={!!busy}
-            onClick={async () => { setBusy("arrive"); await markArrived(res.id); toast.success("Arrival logged — bed now occupied"); }}
+            onClick={async () => {
+              setBusy("arrive");
+              try {
+                await markArrived(res.id);
+                toast.success("Arrival logged — bed now occupied");
+              } catch (err: any) {
+                toast.error(err?.message || "Failed to log arrival");
+              } finally {
+                setBusy(null);
+              }
+            }}
           >
             {busy === "arrive" ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />} Arrived
           </Button>
@@ -605,7 +838,17 @@ function HoldCard({ res, req, hospital }: { res: Reservation; req: EmergencyRequ
       <ReleaseSheet
         open={releaseOpen}
         onOpenChange={setReleaseOpen}
-        onConfirm={async (reason) => { setBusy("release"); await releaseReservation(res.id, reason); toast("Hold released — resources returned"); }}
+        onConfirm={async (reason) => {
+          setBusy("release");
+          try {
+            await releaseReservation(res.id, reason);
+            toast("Hold released — resources returned");
+          } catch (err: any) {
+            toast.error(err?.message || "Failed to release hold");
+          } finally {
+            setBusy(null);
+          }
+        }}
       />
     </motion.div>
   );
@@ -652,7 +895,15 @@ function ReleaseSheet({ open, onOpenChange, onConfirm }: { open: boolean; onOpen
         <div className="mt-4 grid grid-cols-2 gap-2 pb-2">
           <Button variant="outline" className="h-12" disabled={busy} onClick={() => onOpenChange(false)}>Keep hold</Button>
           <Button variant="destructive" className="h-12" disabled={!reason || busy}
-            onClick={async () => { setBusy(true); await onConfirm(reason!); setBusy(false); onOpenChange(false); }}>
+            onClick={async () => {
+              setBusy(true);
+              try {
+                await onConfirm(reason!);
+              } finally {
+                setBusy(false);
+                onOpenChange(false);
+              }
+            }}>
             {busy && <Loader2 className="size-4 animate-spin" />} Release Hold
           </Button>
         </div>

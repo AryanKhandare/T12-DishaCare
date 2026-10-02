@@ -115,7 +115,9 @@ export function initSocket(): Socket {
               : q
           );
       return {
-        reservations: existing ? s.reservations : [res, ...s.reservations],
+        reservations: existing
+          ? s.reservations.map((r) => (r.id === res.id ? { ...r, ...res } : r))
+          : [res, ...s.reservations.filter((r) => r.id !== res.id)],
         requests: updatedRequests,
         events: [
           {
@@ -207,7 +209,7 @@ export function initSocket(): Socket {
     };
 
     useSim.setState((s) => ({
-      reservations: [newRes, ...s.reservations],
+      reservations: [newRes, ...s.reservations.filter((r) => r.id !== newRes.id)],
       requests: s.requests.map((q) =>
         q.id === payload.emergencyId
           ? { ...q, status: "reserving", reservation_ids: [...q.reservation_ids, newRes.id] }

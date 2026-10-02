@@ -20,6 +20,7 @@ import {
   SearchX,
   ShieldCheck,
   Sparkles,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -51,9 +52,9 @@ export const Route = createFileRoute("/dispatch")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Dispatch workspace — BedLink" },
+      { title: "Dispatch workspace — DishaCare" },
       { name: "description", content: "Create an emergency request, compare real verified hospitals on the map and reserve a bed." },
-      { property: "og:title", content: "Dispatch workspace — BedLink" },
+      { property: "og:title", content: "Dispatch workspace — DishaCare" },
       { property: "og:description", content: "Create an emergency request, compare real verified hospitals and reserve a bed." },
     ],
   }),
@@ -729,6 +730,8 @@ function DispatchPage() {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <AppHeader
+        hideDemoBadge
+        hideDemoTools
         left={
           request && !showForm ? (
             <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="hidden items-center gap-2 overflow-hidden lg:flex">
@@ -742,51 +745,50 @@ function DispatchPage() {
               </span>
               <StatusPill status={request.status} />
             </motion.div>
-          ) : (
-            <div className="hidden items-center gap-2 text-xs md:flex">
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 font-semibold text-emerald-600 border border-emerald-500/20">
-                <ShieldCheck className="size-3.5" /> Real PostgreSQL Hospitals
-              </span>
-              {gpsStatus === "GPS_ACTIVE" || gpsStatus === "GPS_ACCURACY_LOW" ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary border border-primary/20">
-                  <Navigation className="size-3 animate-pulse" /> Device GPS Active (±{gpsAccuracy}m)
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-medium text-muted-foreground border">
-                  <Compass className="size-3" /> Manual Pin Mode
-                </span>
-              )}
-            </div>
-          )
+          ) : null
         }
       />
 
       <div className="relative flex min-h-0 flex-1 flex-col md:flex-row">
         {/* Left rail */}
         <motion.aside
-          animate={{ width: railOpen ? 360 : 56 }}
+          animate={{ width: railOpen ? 450 : 56 }}
           transition={{ type: "spring", stiffness: 300, damping: 34 }}
-          className="relative z-10 hidden shrink-0 border-r bg-card md:block"
+          className="relative z-[450] hidden shrink-0 border-r bg-card md:block"
         >
           <button
             onClick={() => setRailOpen((o) => !o)}
-            aria-label={railOpen ? "Collapse panel" : "Expand panel"}
-            className="absolute -right-3.5 top-4 z-20 grid size-7 place-items-center rounded-full border bg-card shadow-card"
+            aria-label={railOpen ? "Collapse navigation panel" : "Expand navigation panel"}
+            className="absolute -right-4 top-4 z-[460] grid size-8 place-items-center rounded-full border border-border bg-card text-foreground shadow-md hover:bg-muted transition-all cursor-pointer"
+            title={railOpen ? "Collapse navigation panel" : "Expand navigation panel"}
           >
             {railOpen ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
           </button>
           {railOpen ? (
-            <div className="h-full overflow-y-auto p-5">
+            <div className="h-full overflow-y-auto p-5 sm:p-6">
               {showForm ? (
                 <>
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold">Create Emergency Request</h2>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8.5 shrink-0 rounded-lg border border-border/80 bg-muted/60 text-foreground hover:bg-muted transition cursor-pointer shadow-xs"
+                        onClick={() => setRailOpen(false)}
+                        title="Close navigation panel"
+                        aria-label="Close navigation panel"
+                      >
+                        <ChevronLeft className="size-5" />
+                      </Button>
+                      <h2 className="text-xl font-bold truncate">Create Emergency Request</h2>
+                    </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 text-xs text-muted-foreground gap-1"
+                      className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1 shrink-0"
                       onClick={() => fetchNearby(currentCoords.lat, currentCoords.lng, radiusKm, form.resources, form.severity)}
                       disabled={loadingNearby}
+                      title="Refresh nearby hospitals"
                     >
                       <RotateCw className={cn("size-3", loadingNearby && "animate-spin")} />
                       Refresh
@@ -838,7 +840,21 @@ function DispatchPage() {
               ) : (
                 request && (
                   <div className="space-y-4">
-                    <h2 className="text-lg font-bold">Active request</h2>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8.5 shrink-0 rounded-lg border border-border/80 bg-muted/60 text-foreground hover:bg-muted transition cursor-pointer shadow-xs"
+                          onClick={() => setRailOpen(false)}
+                          title="Close navigation panel"
+                          aria-label="Close navigation panel"
+                        >
+                          <ChevronLeft className="size-5" />
+                        </Button>
+                        <h2 className="text-xl font-bold truncate">Active request</h2>
+                      </div>
+                    </div>
                     <SummaryCard request={request} />
                     {!inFlow && (
                       <Button variant="outline" className="h-11 w-full" onClick={() => setEditing(true)}>

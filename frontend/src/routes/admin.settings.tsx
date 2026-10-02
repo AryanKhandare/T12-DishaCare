@@ -7,9 +7,9 @@ import { useTheme } from "@/lib/theme";
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — BedLink" },
+      { title: "Settings — DishaCare" },
       { name: "description", content: "Matching weights, freshness windows and reservation hold configuration." },
-      { property: "og:title", content: "Settings — BedLink" },
+      { property: "og:title", content: "Settings — DishaCare" },
       { property: "og:description", content: "Matching weights and reservation configuration." },
     ],
   }),

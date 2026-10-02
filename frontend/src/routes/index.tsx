@@ -5,10 +5,10 @@ export const Route = createFileRoute("/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "BedLink — Secure the right bed" },
-      { name: "description", content: "Real-time emergency hospital and bed allocation platform (simulated demo)." },
-      { property: "og:title", content: "BedLink — Secure the right bed" },
-      { property: "og:description", content: "Real-time emergency hospital and bed allocation platform (simulated demo)." },
+      { title: "DishaCare — Secure the right bed" },
+      { name: "description", content: "Real-time emergency hospital and bed allocation platform." },
+      { property: "og:title", content: "DishaCare — Secure the right bed" },
+      { property: "og:description", content: "Real-time emergency hospital and bed allocation platform." },
     ],
   }),
   beforeLoad: () => {

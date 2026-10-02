@@ -33,10 +33,10 @@ export const Route = createFileRoute("/signup")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Create Account — BedLink" },
-      { name: "description", content: "Register for BedLink as a dispatcher or hospital nurse." },
-      { property: "og:title", content: "Create Account — BedLink" },
-      { property: "og:description", content: "Register for BedLink as a dispatcher or hospital nurse." },
+      { title: "Create Account — DishaCare" },
+      { name: "description", content: "Register for DishaCare as a dispatcher or hospital nurse." },
+      { property: "og:title", content: "Create Account — DishaCare" },
+      { property: "og:description", content: "Register for DishaCare as a dispatcher or hospital nurse." },
     ],
   }),
   beforeLoad: () => {
@@ -261,7 +261,7 @@ function SignupPage() {
       });
 
       setSession(res.access_token, res.user);
-      toast.success(res.message || `Welcome to BedLink, ${res.user.name}!`);
+      toast.success(res.message || `Welcome to DishaCare, ${res.user.name}!`);
       navigate({ to: ROLE_HOME[res.user.role], replace: true });
     } catch (err: any) {
       toast.error(err.message || "Verification failed. Please try again.");
@@ -271,63 +271,71 @@ function SignupPage() {
   };
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
-      {/* Left branding aside */}
-      <aside className="relative hidden overflow-hidden bg-brand-gradient p-10 text-navy-foreground lg:flex lg:flex-col">
-        <BrandMark light />
-        <div className="my-auto max-w-lg">
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl font-extrabold leading-[1.05] tracking-tight"
-          >
-            Join the BedLink
-            <br />
-            <span className="text-primary-foreground/70">Emergency Network.</span>
-          </motion.h1>
-          <p className="mt-5 text-lg text-navy-foreground/75">
-            Real-time ambulance dispatching, instant hospital bed reservations, and explainable
-            resource matching across municipal health systems.
-          </p>
-          <div className="mt-10 grid grid-cols-3 gap-3">
-            {[
-              { icon: Zap, k: "Network", v: "Live Sync" },
-              { icon: Timer, k: "Hold Time", v: "02:00" },
-              { icon: ShieldCheck, k: "Security", v: "OTP + JWT" },
-            ].map((x) => (
-              <div
-                key={x.k}
-                className="rounded-2xl border border-navy-foreground/15 bg-navy-foreground/5 p-4 backdrop-blur"
-              >
-                <x.icon className="size-5 text-navy-foreground/70" />
-                <div className="mt-3 text-xl font-bold">{x.v}</div>
-                <div className="text-sm text-navy-foreground/60">{x.k}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <p className="text-xs text-navy-foreground/50">
-          BedLink Operational Coordination Platform. Role authorization enforced at database level.
-        </p>
-        <svg
-          className="pointer-events-none absolute -right-24 -bottom-24 size-[480px] opacity-10"
-          viewBox="0 0 200 200"
-          fill="none"
-          stroke="currentColor"
-        >
-          {[30, 55, 80, 100].map((r) => (
-            <circle key={r} cx="100" cy="100" r={r} strokeWidth="1" />
-          ))}
-        </svg>
-      </aside>
+    <div className="relative min-h-screen w-full overflow-hidden font-sans">
+      {/* Full page background image */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+        style={{ backgroundImage: "url('/Login_bg2.png')" }}
+      />
 
-      {/* Main signup form */}
-      <main className="flex items-center justify-center p-6 py-10">
-        <div className="w-full max-w-md">
-          <div className="mb-6 flex items-center justify-between lg:hidden">
-            <BrandMark />
+      <div className="relative z-10 grid min-h-screen lg:grid-cols-[1fr_1.1fr]">
+        {/* Left branding aside with subtle transparent gradient only behind text for high readability */}
+        <aside className="relative hidden flex-col justify-between overflow-hidden p-10 lg:flex bg-gradient-to-r from-slate-950/80 via-slate-950/40 to-transparent">
+          <BrandMark light />
+          <div className="my-auto max-w-lg py-8">
+            <motion.h1
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
+            >
+              Join the DishaCare
+              <br />
+              <span className="text-emerald-400">Emergency Network.</span>
+            </motion.h1>
+            <p className="mt-5 text-lg text-slate-100 leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]">
+              Real-time ambulance dispatching, instant hospital bed reservations, and explainable
+              resource matching across municipal health systems.
+            </p>
+            <div className="mt-10 grid grid-cols-3 gap-3">
+              {[
+                { icon: Zap, k: "Network", v: "Live Sync" },
+                { icon: Timer, k: "Hold Time", v: "02:00" },
+                { icon: ShieldCheck, k: "Security", v: "OTP + JWT" },
+              ].map((x) => (
+                <div
+                  key={x.k}
+                  className="rounded-2xl border border-emerald-500/25 bg-slate-900/90 p-4 shadow-xl text-white"
+                >
+                  <x.icon className="size-5 text-emerald-400" />
+                  <div className="mt-3 text-xl font-bold tracking-tight text-white">{x.v}</div>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-slate-300">{x.k}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <DemoBadge />
+          <p className="text-xs font-medium text-slate-200/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+            DishaCare Operational Coordination Platform. Role authorization enforced at database level.
+          </p>
+          <svg
+            className="pointer-events-none absolute -right-24 -bottom-24 size-[480px] text-white opacity-5"
+            viewBox="0 0 200 200"
+            fill="none"
+            stroke="currentColor"
+          >
+            {[30, 55, 80, 100].map((r) => (
+              <circle key={r} cx="100" cy="100" r={r} strokeWidth="1" />
+            ))}
+          </svg>
+        </aside>
+
+        {/* Main signup form */}
+        <main className="relative flex items-center justify-center lg:justify-start p-4 sm:p-6 lg:p-8 lg:pl-16 py-10">
+          {/* Form component: wider card with rich twilight navy colors matching background ambiance */}
+          <div className="relative z-10 w-full max-w-[660px] rounded-3xl border border-slate-700/60 bg-slate-900/92 p-7 sm:p-9 shadow-2xl backdrop-blur-xl ring-1 ring-white/10">
+            <div className="mb-6 flex items-center justify-between lg:hidden">
+              <BrandMark light />
+            </div>
+            <DemoBadge />
 
           <AnimatePresence mode="wait">
             {step === "form" ? (
@@ -338,20 +346,20 @@ function SignupPage() {
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.2 }}
               >
-                <h2 className="mt-4 text-3xl font-bold tracking-tight">Create your account</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white">Create your account</h2>
+                <p className="mt-1.5 text-sm text-slate-300">
                   Sign up as an emergency dispatcher or hospital nurse.
                 </p>
 
                 <form className="mt-6 space-y-4" onSubmit={handleProceedToOtp}>
                   {/* Full Name */}
                   <div>
-                    <Label htmlFor="name" className="mb-1.5 block">
+                    <Label htmlFor="name" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
                       Full Name
                     </Label>
                     <Input
                       id="name"
-                      className="h-11"
+                      className="h-11 border-slate-700/80 bg-slate-950/60 text-white placeholder:text-slate-500 focus:bg-slate-950/90 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/25 transition-all"
                       placeholder="e.g. Priya Shah"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -362,35 +370,35 @@ function SignupPage() {
 
                   {/* Username */}
                   <div>
-                    <Label htmlFor="username" className="mb-1.5 block">
+                    <Label htmlFor="username" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
                       Username
                     </Label>
                     <div className="relative">
                       <Input
                         id="username"
-                        className="h-11 pl-10 font-mono text-sm"
+                        className="h-11 border-slate-700/80 bg-slate-950/60 pl-10 font-mono text-sm text-white placeholder:text-slate-500 focus:bg-slate-950/90 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/25 transition-all"
                         placeholder="e.g. nurse_priya (letters, numbers, _)"
                         value={username}
                         onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
                         autoComplete="username"
                         required
                       />
-                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      You can use this username and password to sign in to your BedLink account.
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      You can use this username and password to sign in to your DishaCare account.
                     </p>
                   </div>
 
                   {/* Email */}
                   <div>
-                    <Label htmlFor="email" className="mb-1.5 block">
+                    <Label htmlFor="email" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
                       Email Address
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      className="h-11"
+                      className="h-11 border-slate-700/80 bg-slate-950/60 text-white placeholder:text-slate-500 focus:bg-slate-950/90 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/25 transition-all"
                       placeholder="e.g. priya@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -401,37 +409,37 @@ function SignupPage() {
 
                   {/* Phone Number */}
                   <div>
-                    <Label htmlFor="phone" className="mb-1.5 block">
+                    <Label htmlFor="phone" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
                       Mobile Phone (for SMS OTP)
                     </Label>
                     <div className="relative">
                       <Input
                         id="phone"
                         type="tel"
-                        className="h-11 pl-10"
+                        className="h-11 border-slate-700/80 bg-slate-950/60 pl-10 text-white placeholder:text-slate-500 focus:bg-slate-950/90 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/25 transition-all"
                         placeholder="+91 98000 00012"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         autoComplete="tel"
                         required
                       />
-                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-[11px] text-slate-400">
                       A 6-digit verification code will be sent via SMS.
                     </p>
                   </div>
 
                   {/* Password */}
                   <div>
-                    <Label htmlFor="pwd" className="mb-1.5 block">
+                    <Label htmlFor="pwd" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
                       Password
                     </Label>
                     <div className="relative">
                       <Input
                         id="pwd"
                         type={showPassword ? "text" : "password"}
-                        className="h-11 pr-10"
+                        className="h-11 border-slate-700/80 bg-slate-950/60 pr-10 text-white placeholder:text-slate-500 focus:bg-slate-950/90 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/25 transition-all"
                         placeholder="Min 8 chars (upper, lower, number)"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -441,7 +449,7 @@ function SignupPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-white"
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -452,8 +460,8 @@ function SignupPage() {
                     {password && (
                       <div className="mt-2 space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">Strength:</span>
-                          <span className="font-semibold">{strength.label}</span>
+                          <span className="text-slate-400">Strength:</span>
+                          <span className="font-bold text-white">{strength.label}</span>
                         </div>
                         <div className="grid grid-cols-4 gap-1">
                           {[1, 2, 3, 4].map((s) => (
@@ -461,7 +469,7 @@ function SignupPage() {
                               key={s}
                               className={cn(
                                 "h-1.5 rounded-full transition-all duration-300",
-                                s <= strength.score ? strength.color : "bg-muted"
+                                s <= strength.score ? strength.color : "bg-slate-800"
                               )}
                             />
                           ))}
@@ -472,14 +480,14 @@ function SignupPage() {
 
                   {/* Confirm Password */}
                   <div>
-                    <Label htmlFor="confirmPwd" className="mb-1.5 block">
+                    <Label htmlFor="confirmPwd" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
                       Confirm Password
                     </Label>
                     <div className="relative">
                       <Input
                         id="confirmPwd"
                         type={showConfirmPassword ? "text" : "password"}
-                        className="h-11 pr-10"
+                        className="h-11 border-slate-700/80 bg-slate-950/60 pr-10 text-white placeholder:text-slate-500 focus:bg-slate-950/90 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/25 transition-all"
                         placeholder="Re-enter password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -489,14 +497,14 @@ function SignupPage() {
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-white"
                         aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                       >
                         {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
                     </div>
                     {confirmPassword && password !== confirmPassword && (
-                      <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
+                      <p className="mt-1 flex items-center gap-1 text-xs font-medium text-rose-400">
                         <AlertCircle className="size-3" /> Passwords do not match
                       </p>
                     )}
@@ -504,7 +512,7 @@ function SignupPage() {
 
                   {/* Role Selection */}
                   <div>
-                    <Label className="mb-1.5 block">Account Type</Label>
+                    <Label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">Account Type</Label>
                     <div className="space-y-2">
                       {PUBLIC_ROLES.map((r) => (
                         <button
@@ -512,31 +520,33 @@ function SignupPage() {
                           type="button"
                           onClick={() => setRole(r.role)}
                           className={cn(
-                            "relative flex w-full items-center gap-3 overflow-hidden rounded-xl border bg-card p-3 text-left transition hover:shadow-lift",
-                            role === r.role && "border-primary/60 shadow-lift"
+                            "relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-3 text-left transition-all",
+                            role === r.role
+                              ? "border-emerald-500 bg-emerald-950/50 text-white shadow-sm ring-1 ring-emerald-500/40"
+                              : "border-slate-800 bg-slate-950/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/40"
                           )}
                         >
                           {role === r.role && (
-                            <span className="absolute inset-y-0 left-0 w-1 bg-primary" />
+                            <span className="absolute inset-y-0 left-0 w-1.5 bg-emerald-500" />
                           )}
                           <span
                             className={cn(
                               "grid size-10 place-items-center rounded-lg",
-                              role === r.role ? "bg-primary text-primary-foreground" : "bg-muted"
+                              role === r.role ? "bg-emerald-600 text-white shadow-xs" : "bg-slate-800/90 text-slate-300"
                             )}
                           >
                             <r.icon className="size-4" />
                           </span>
                           <span className="flex-1">
-                            <span className="block text-sm font-semibold">{r.title}</span>
-                            <span className="block text-xs text-muted-foreground">{r.sub}</span>
+                            <span className="block text-sm font-bold text-white">{r.title}</span>
+                            <span className={cn("block text-xs font-medium", role === r.role ? "text-emerald-300" : "text-slate-400")}>{r.sub}</span>
                           </span>
                           <span
                             className={cn(
                               "size-4 rounded-full border-2",
                               role === r.role
-                                ? "border-primary bg-primary ring-2 ring-primary/20 ring-offset-2 ring-offset-card"
-                                : ""
+                                ? "border-emerald-500 bg-emerald-500 ring-2 ring-emerald-500/30 ring-offset-2 ring-offset-slate-900"
+                                : "border-slate-700 bg-slate-900"
                             )}
                           />
                         </button>
@@ -552,39 +562,39 @@ function SignupPage() {
                       exit={{ opacity: 0, height: 0 }}
                       className="space-y-1.5"
                     >
-                      <Label htmlFor="hospital-select" className="mb-1.5 block">
-                        Select Hospital <span className="text-destructive">*</span>
+                      <Label htmlFor="hospital-select" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-200">
+                        Select Hospital <span className="text-rose-400">*</span>
                       </Label>
                       {loadingHospitals && hospitals.length === 0 ? (
-                        <div className="flex h-11 items-center gap-2 rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">
-                          <Loader2 className="size-4 animate-spin text-primary" /> Loading active hospitals...
+                        <div className="flex h-11 items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-950/60 px-3 text-xs text-slate-400">
+                          <Loader2 className="size-4 animate-spin text-emerald-500" /> Loading active hospitals...
                         </div>
                       ) : (
                         <select
                           id="hospital-select"
                           value={hospitalId}
                           onChange={(e) => setHospitalId(e.target.value)}
-                          className="flex h-11 w-full rounded-md border border-input bg-card px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring"
+                          className="flex h-11 w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-3 py-2 text-sm text-white focus:bg-slate-950 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/30"
                           required
                         >
-                          <option value="" disabled>
+                          <option value="" disabled className="bg-slate-900 text-slate-400">
                             -- Select Hospital --
                           </option>
                           {hospitals.map((h) => (
-                            <option key={h.id} value={h.id}>
+                            <option key={h.id} value={h.id} className="bg-slate-900 text-white">
                               {h.name} {h.area ? `(${h.area})` : ""}
                             </option>
                           ))}
                         </select>
                       )}
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[11px] text-slate-400">
                         Hospital nurses are permanently linked to their designated hospital.
                       </p>
                     </motion.div>
                   )}
 
                   {/* Submit Button */}
-                  <Button type="submit" className="h-11 w-full text-base" disabled={busy}>
+                  <Button type="submit" className="h-12 w-full text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all active:scale-[0.99]" disabled={busy}>
                     {busy ? (
                       <>
                         <Loader2 className="mr-2 size-4 animate-spin" /> Sending verification code...
@@ -596,9 +606,9 @@ function SignupPage() {
                 </form>
 
                 {/* Already have an account */}
-                <div className="mt-6 text-center text-sm text-muted-foreground">
+                <div className="mt-6 border-t border-slate-800 pt-4 text-center text-sm font-medium text-slate-300">
                   Already have an account?{" "}
-                  <Link to="/login" className="font-semibold text-primary hover:underline">
+                  <Link to="/login" className="font-bold text-emerald-400 hover:text-emerald-300 hover:underline">
                     Sign In
                   </Link>
                 </div>
@@ -617,24 +627,24 @@ function SignupPage() {
                   <button
                     type="button"
                     onClick={() => setStep("form")}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition"
                   >
                     <ArrowLeft className="size-3.5" /> Back to details
                   </button>
-                  <h2 className="mt-3 text-3xl font-bold tracking-tight">Verify your phone</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-white">Verify your phone</h2>
+                  <p className="mt-1 text-sm text-slate-300">
                     Enter the 6-digit OTP code sent to{" "}
-                    <span className="font-semibold text-foreground">{phone}</span>
+                    <span className="font-bold text-white">{phone}</span>
                   </p>
                 </div>
 
                 {devOtp && (
-                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
-                    <span className="font-semibold">Dev Mode Hint:</span> Verification code is{" "}
+                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300">
+                    <span className="font-bold">Dev Mode Hint:</span> Verification code is{" "}
                     <button
                       type="button"
                       onClick={() => setOtp(devOtp)}
-                      className="font-mono font-bold underline"
+                      className="font-mono font-bold underline text-emerald-300 hover:text-emerald-200"
                     >
                       {devOtp}
                     </button>{" "}
@@ -646,17 +656,17 @@ function SignupPage() {
                   <div className="flex flex-col items-center justify-center space-y-2">
                     <InputOTP maxLength={6} value={otp} onChange={(val) => setOtp(val)}>
                       <InputOTPGroup className="gap-2">
-                        <InputOTPSlot index={0} className="h-12 w-11 rounded-lg border text-lg font-bold" />
-                        <InputOTPSlot index={1} className="h-12 w-11 rounded-lg border text-lg font-bold" />
-                        <InputOTPSlot index={2} className="h-12 w-11 rounded-lg border text-lg font-bold" />
-                        <InputOTPSlot index={3} className="h-12 w-11 rounded-lg border text-lg font-bold" />
-                        <InputOTPSlot index={4} className="h-12 w-11 rounded-lg border text-lg font-bold" />
-                        <InputOTPSlot index={5} className="h-12 w-11 rounded-lg border text-lg font-bold" />
+                        <InputOTPSlot index={0} className="h-12 w-11 rounded-lg border border-slate-700 bg-slate-950/80 text-lg font-bold text-white shadow-xs focus:border-emerald-500 focus:bg-slate-950" />
+                        <InputOTPSlot index={1} className="h-12 w-11 rounded-lg border border-slate-700 bg-slate-950/80 text-lg font-bold text-white shadow-xs focus:border-emerald-500 focus:bg-slate-950" />
+                        <InputOTPSlot index={2} className="h-12 w-11 rounded-lg border border-slate-700 bg-slate-950/80 text-lg font-bold text-white shadow-xs focus:border-emerald-500 focus:bg-slate-950" />
+                        <InputOTPSlot index={3} className="h-12 w-11 rounded-lg border border-slate-700 bg-slate-950/80 text-lg font-bold text-white shadow-xs focus:border-emerald-500 focus:bg-slate-950" />
+                        <InputOTPSlot index={4} className="h-12 w-11 rounded-lg border border-slate-700 bg-slate-950/80 text-lg font-bold text-white shadow-xs focus:border-emerald-500 focus:bg-slate-950" />
+                        <InputOTPSlot index={5} className="h-12 w-11 rounded-lg border border-slate-700 bg-slate-950/80 text-lg font-bold text-white shadow-xs focus:border-emerald-500 focus:bg-slate-950" />
                       </InputOTPGroup>
                     </InputOTP>
                   </div>
 
-                  <Button type="submit" className="h-12 w-full text-base" disabled={busy || otp.length !== 6}>
+                  <Button type="submit" className="h-12 w-full text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all active:scale-[0.99]" disabled={busy || otp.length !== 6}>
                     {busy ? (
                       <>
                         <Loader2 className="mr-2 size-4 animate-spin" /> Verifying & Creating Account...
@@ -666,15 +676,15 @@ function SignupPage() {
                     )}
                   </Button>
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
                     <span>Didn't receive code?</span>
                     <button
                       type="button"
                       disabled={cooldown > 0 || busy}
                       onClick={handleResendOtp}
                       className={cn(
-                        "font-semibold transition",
-                        cooldown > 0 ? "text-muted-foreground/60 cursor-not-allowed" : "text-primary hover:underline"
+                        "font-bold transition",
+                        cooldown > 0 ? "text-slate-500 cursor-not-allowed" : "text-emerald-400 hover:text-emerald-300 hover:underline"
                       )}
                     >
                       {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
@@ -687,5 +697,7 @@ function SignupPage() {
         </div>
       </main>
     </div>
+  </div>
   );
 }
+

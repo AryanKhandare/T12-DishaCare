@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { BarChart3, Building2, CalendarClock, LayoutDashboard, Settings, Siren, Users, ExternalLink } from "lucide-react";
+import { Building2, CalendarClock, LayoutDashboard, Settings, Siren, Users, ExternalLink } from "lucide-react";
 import { AppHeader, BrandMark } from "@/components/bedlink/AppHeader";
 import { requireRole } from "@/lib/guards";
 import { useSim } from "@/lib/sim-store";
@@ -15,7 +15,6 @@ const NAV = [
   { to: "/admin/hospitals", label: "Hospitals", icon: Building2 },
   { to: "/admin/requests", label: "Active Requests", icon: Siren },
   { to: "/admin/reservations", label: "Reservations", icon: CalendarClock },
-  { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ] as const;

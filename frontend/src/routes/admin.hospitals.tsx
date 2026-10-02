@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/admin/hospitals")({
   head: () => ({
     meta: [
-      { title: "Hospital network — BedLink" },
+      { title: "Hospital network — DishaCare" },
       { name: "description", content: "Search and filter every hospital in the network with a synced map and list view." },
-      { property: "og:title", content: "Hospital network — BedLink" },
+      { property: "og:title", content: "Hospital network — DishaCare" },
       { property: "og:description", content: "Search and filter every hospital with a synced map and list." },
     ],
   }),

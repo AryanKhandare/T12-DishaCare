@@ -122,7 +122,7 @@ export const useSim = create<SimState>()(
           held: {},
         };
         set((st) => ({
-          reservations: [res, ...st.reservations],
+          reservations: [res, ...st.reservations.filter((r) => r.id !== res.id)],
           requests: st.requests.map((r) =>
             r.id === requestId ? { ...r, status: "reserving", reservation_ids: [...r.reservation_ids, res.id] } : r,
           ),

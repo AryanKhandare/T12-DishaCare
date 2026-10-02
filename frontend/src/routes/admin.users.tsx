@@ -10,10 +10,10 @@ import { Loader2 } from "lucide-react";
 export const Route = createFileRoute("/admin/users")({
   head: () => ({
     meta: [
-      { title: "Users — BedLink" },
-      { name: "description", content: "Registered user accounts from the BedLink database." },
-      { property: "og:title", content: "Users — BedLink" },
-      { property: "og:description", content: "Registered user accounts from the BedLink database." },
+      { title: "Users — DishaCare" },
+      { name: "description", content: "Registered user accounts from the DishaCare database." },
+      { property: "og:title", content: "Users — DishaCare" },
+      { property: "og:description", content: "Registered user accounts from the DishaCare database." },
     ],
   }),
   component: UsersPage,

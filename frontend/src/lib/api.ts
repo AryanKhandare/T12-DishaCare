@@ -489,13 +489,24 @@ export const expireReservation = (id: string) =>
   );
 
 // POST /api/reservations/{id}/release
-export const releaseReservation = (id: string, reason?: string) =>
-  request<any>(
-    "POST",
-    `/api/reservations/${id}/release`,
-    { reason },
-    () => useSim.getState().release(id, actor(), reason)
-  );
+export async function releaseReservation(id: string, reason?: string) {
+  try {
+    const res = await request<any>(
+      "POST",
+      `/api/reservations/${id}/release`,
+      { reason },
+      () => {
+        useSim.getState().release(id, actor(), reason);
+        return null;
+      }
+    );
+    useSim.getState().release(id, actor(), reason);
+    return res;
+  } catch {
+    useSim.getState().release(id, actor(), reason);
+    return null;
+  }
+}
 
 // GET /api/admin/metrics
 export function computeMetrics() {

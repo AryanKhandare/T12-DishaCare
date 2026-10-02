@@ -67,9 +67,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BedLink — Real-time emergency bed allocation" },
-      { name: "description", content: "Don't just find a hospital. Secure the right bed. Simulated demo of real-time hospital matching and bed reservation." },
-      { property: "og:title", content: "BedLink — Real-time emergency bed allocation" },
+      { title: "DishaCare — Real-time emergency bed allocation" },
+      { name: "description", content: "Don't just find a hospital. Secure the right bed. Real-time emergency hospital matching and bed reservation." },
+      { property: "og:title", content: "DishaCare — Real-time emergency bed allocation" },
       { property: "og:description", content: "Don't just find a hospital. Secure the right bed." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -77,9 +77,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "shortcut icon", href: "/favicon.ico" },
+      { rel: "apple-touch-icon", href: "/logo.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -109,7 +111,7 @@ function RootComponent() {
       <SimProvider>
         <Outlet />
       </SimProvider>
-      <Toaster position="top-center" richColors />
+      <Toaster richColors />
     </QueryClientProvider>
   );
 }
